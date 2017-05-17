@@ -42,6 +42,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        Vector3 movement;                   // The vector to store the direction of the player's movement.
+        Animator anim;
+        Rigidbody playerRigidbody;
+
+
         // Use this for initialization
         private void Start()
         {
@@ -55,6 +60,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+        }
+
+        void Awake()
+        {
+            // Create a layer mask for the floor layer.
+            //    floorMask = LayerMask.GetMask("Floor");
+
+            // Set up references.
+            anim = GetComponent<Animator>();
+            playerRigidbody = GetComponent<Rigidbody>();
         }
 
 
@@ -119,6 +134,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     PlayJumpSound();
                     m_Jump = false;
                     m_Jumping = true;
+                    anim.SetTrigger("Jump");
                 }
             }
             else
@@ -128,6 +144,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_CollisionFlags = m_CharacterController.Move(m_MoveDir*Time.fixedDeltaTime);
 
             ProgressStepCycle(speed);
+            anim.SetBool("IsWalking", speed != 0);
             UpdateCameraPosition(speed);
 
             m_MouseLook.UpdateCursorLock();
@@ -254,6 +271,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 return;
             }
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
+        }
+        void Animating(float h, float v)
+        {
+            // Create a boolean that is true if either of the input axes is non-zero.
+            bool walking = h != 0f || v != 0f;
+
+            // Tell the animator whether or not the player is walking.
+            anim.SetBool("IsWalking", walking);
+
+            
         }
     }
 }

@@ -46,7 +46,7 @@ public class ModularWorldGenerator : MonoBehaviour
                 MatchExits(pendingExit, exitToMatch);
             //}
         }
-        if(existingModules.Count < 10)
+		if(existingModules.Count < 15 )
         {
             foreach (var module in existingModules)
             {
